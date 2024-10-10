@@ -1,120 +1,139 @@
-import React, { useRef, useState } from "react";
-import { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
+// // import { RingLoader } from "react-spinners";
 import Header from "./assets/components/Header";
 
 function App() {
   const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const genderRef = useRef();
+  const [filtered, setFiltered] = useState([]);
+  const [page, setPages] = useState(0);
+  const [limit, setLimit] = useState(12);
   const majorRef = useRef();
+  const genderRef = useRef();
+
   useEffect(() => {
-    fetch("https://json-api.uz/api/project/11-dars/developers")
-      .then((resp) => resp.json())
+    fetch(
+      `https://json-api.uz/api/project/11-dars/developers?skip=${page}&limit=${limit}`
+    )
+      .then((response) => {
+        return response.json();
+      })
       .then((data) => {
-        console.log(data.data);
         setUsers(data.data);
-        setFilteredUsers(data.data);
+        setFiltered(data.data);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, []);
-  function handleMajor() {
-    let copiedDel = [...users];
-    copiedDel = copiedDel.filter((item) => {
-      return item.major === majorRef.current.value;
-    });
-    setFilteredUsers(copiedDel);
+  }, [page, limit]);
+
+  function handleSelect(event) {
+    event.target.value;
+    let copied = [...filtered];
+    if (genderRef.current.value) {
+      copied = copied.filter((value) => {
+        return value.gender === genderRef.current.value;
+      });
+    }
+    if (majorRef.current.value) {
+      copied = copied.filter((value) => {
+        return value.major === majorRef.current.value;
+      });
+    }
+    setUsers(copied);
+  }
+  function handleShow(e) {
+    e.preventDefault();
+    setLimit(limit + limit);
   }
 
   return (
-    <div className="bg-slate-200">
+    <div>
       <Header />
-      <h1 className="text-3xl text-slate-900 text-center py-10 ">
-        Kelajagi buyuklar
-      </h1>
-      <div className="filter-qism flex justify-end container mb-16">
-        <select
-          ref={genderRef}
-          className="py-4 shadow-2xl w-1/4 rounded-xl pl-3"
+      <div className="container mx-auto px-24">
+        <h1 className="text-2xl text-center font-bold mt-12 text-slate-900">
+          Kelajagi buyuklar
+        </h1>
+        <div className="flex gap-4 justify-end mx-24 my-8">
+          <select
+            ref={majorRef}
+            className="w-52  border rounded-md p-2 "
+            onChange={handleSelect}
+            name="major"
+          >
+            <option value="">All Majors</option>
+            <option value="Computer Science">Computer Science</option>
+
+            <option value="Mathematics">Mathematics</option>
+            <option value="Biology">Biology</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Graphic Design">Graphic Design</option>
+            <option value="History">History</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Physics">Physics</option>
+            <option value="Economics">Economics</option>
+            <option value="English Literature">English Literature</option>
+            <option value="Philosophy">Philosophy</option>
+            <option value="Political Science">Political Science</option>
+            <option value="Sociology">Sociology</option>
+            <option value="Environmental Science">Environmental Science</option>
+            <option value="Nursing">Nursing</option>
+            <option value="Statistics">Statistics</option>
+            <option value="Digital Media">Digital Media</option>
+            <option value="Linguistics">Linguistics</option>
+            <option value="Mathematics">Mathematics</option>
+            <option value="Physics">Physics</option>
+            <option value="Social Work">Social Work</option>
+            <option value="Fine Arts">Fine Arts</option>
+            <option value="Information Technology">
+              Information Technology
+            </option>
+            <option value="Business Administration">
+              Business Administration
+            </option>
+            <option value="Anthropology">Anthropology</option>
+            <option value="Public Relations">Public Relations</option>
+            <option value="Cybersecurity">Cybersecurity</option>
+            <option value="Journalism">Journalism</option>
+            <option value="Education">Education</option>
+            <option value="Dance">Dance</option>
+            <option value="Veterinary Science">Veterinary Science</option>
+            <option value="Sports Management">Sports Management</option>
+            <option value="Forensic Science">Forensic Science</option>
+            <option value="Real Estate">Real Estate</option>
+            <option value="Film Studies">Film Studies</option>
+          </select>
+          <select
+            ref={genderRef}
+            className="w-52   border rounded-md p-2"
+            onChange={handleSelect}
+            name="gender"
+          >
+            <option value="">All Genders </option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+        {/* {<div className=" flex  justify-center"></div>} */}
+        <div className="flex flex-wrap gap-4 font-sans ">
+          {users.map((user) => (
+            <div
+              className="border rounded-md p-4 shadow-md hover:shadow-lg transition-all duration-300 w-full max-w-[250px]   "
+              key={user.id}
+            >
+              <h3 className="font-bold">Name: {user.id}</h3>
+              <h3 className="font-bold">Name: {user.fullName}</h3>
+              <h3>Major: {user.major}</h3>
+              <h3>Age: {user.age}</h3>
+              <h3>Gender: {user.gender}</h3>
+            </div>
+          ))}
+        </div>
+        <button
+          className="w-full bg-slate-200 py-4 rounded-xl border mt-10"
+          onClick={handleShow}
         >
-          <option value="gender">Gender</option>
-          <option value="female">Female</option>
-          <option value="male">Male</option>
-        </select>
-        <select
-          ref={majorRef}
-          onChange={handleMajor}
-          className="py-4 shadow-2xl w-1/4 rounded-xl pl-3"
-        >
-          <option value="all">All</option>
-          <option value="Computer Science">Computer Science</option>
-          <option value="Mathematics">Mathematics</option>
-          <option value="Biology">Biology</option>
-          <option value="Engineering">Engineering</option>
-          <option value="Graphic Design">Graphic Design</option>
-          <option value="History">History</option>
-          <option value="Chemistry">Chemistry</option>
-          <option value="Physics">Physics</option>
-          <option value="Economics">Economics</option>
-          <option value="English Literature">English Literature</option>
-          <option value="Philosophy">Philosophy</option>
-          <option value="Political Science">Political Science</option>
-          <option value="Sociology">Sociology</option>
-          <option value="Environmental Science">Environmental Science</option>
-          <option value="Nursing">Nursing</option>
-          <option value="Statistics">Statistics</option>
-          <option value="Digital Media">Digital Media</option>
-          <option value="Linguistics">Linguistics</option>
-          <option value="Mathematics">Mathematics</option>
-          <option value="Physics">Physics</option>
-          <option value="Social Work">Social Work</option>
-          <option value="Fine Arts">Fine Arts</option>
-          <option value="Information Technology">Information Technology</option>
-          <option value="Business Administration">
-            Business Administration
-          </option>
-          <option value="Anthropology">Anthropology</option>
-          <option value="Public Relations">Public Relations</option>
-          <option value="Cybersecurity">Cybersecurity</option>
-          <option value="Journalism">Journalism</option>
-          <option value="Education">Education</option>
-          <option value="Dance">Dance</option>
-          <option value="Veterinary Science">Veterinary Science</option>
-          <option value="Sports Management">Sports Management</option>
-          <option value="Forensic Science">Forensic Science</option>
-          <option value="Real Estate">Real Estate</option>
-          <option value="Film Studies">Film Studies</option>
-        </select>
-      </div>
-      <div className="wrapper grid grid-cols-4 gap-4 container mx-auto px-24">
-        {filteredUsers.length > 0 &&
-          filteredUsers.map((user) => {
-            return (
-              <div
-                className="w-60 bg-gradient-to-l from-slate-300 to-slate-100 text-slate-600 border border-slate-300 grid grid-col-2 justify-center p-4 gap-4 rounded-lg shadow-md"
-                key={user.id}
-              >
-                <div className="col-span-2 text-lg font-bold capitalize rounded-md">
-                  <b>Name: </b>
-                  {user.fullName}
-                </div>
-                <div className="col-span-2 rounded-md">
-                  <b>Major: </b>
-                  {user.major}
-                </div>
-                <div className="col-span-2 rounded-md">
-                  <b>Gender: </b>
-                  {user.gender}
-                </div>
-                <div className="col-span-2 rounded-md">
-                  <b>Age: </b>
-                  {user.age}
-                </div>
-                <div className="col-span-1"></div>
-              </div>
-            );
-          })}
+          Show more 12
+        </button>
       </div>
     </div>
   );
